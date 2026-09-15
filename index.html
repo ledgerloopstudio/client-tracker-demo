@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Tracker &amp; CRM — LedgerLoopStudio</title>
+<style>
+:root{
+  --ink:#1B2A36; --grey:#5A6B78; --rule:#E2E6E9; --band:#FAFBFC;
+  --bg:#F7F8F9; --card:#FFFFFF; --teal:#0F7B6C; --teal-d:#0B5F54; --teal-l:#E6F2F0;
+  --alert:#C0392B; --alert-l:#FBEAE7; --amber:#B9770E; --amber-l:#FBF0DC;
+  --navy:#2E5C8A; --navy-l:#E7EEF5; --plum:#7A4E8C; --plum-l:#F1E9F4;
+  --green:#12B76A; --green-l:#E4F7EE;
+  --accent: var(--teal); --accent-d: var(--teal-d); --accent-l: var(--teal-l);
+  --shadow: 0 1px 2px rgba(27,42,54,.06), 0 4px 14px rgba(27,42,54,.06);
+}
+[data-theme="dark"]{
+  --bg:#182028; --card:#212B35; --ink:#EDF1F4; --grey:#93A2AD; --rule:#324351; --band:#1D2731;
+  --teal-l:#1D3B37; --alert-l:#3A2321; --amber-l:#3A2E1B; --navy-l:#1E2C3C; --plum-l:#2C2333;
+  --green-l:#17301F;
+  --accent-l: color-mix(in srgb, var(--accent) 22%, #212B35);
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
+}
+
+/* ---------- board styles (templates) ---------- */
+body[data-style="vivid"] #topbar{
+  background: linear-gradient(100deg, var(--ink) 0%, color-mix(in srgb, var(--accent) 55%, var(--ink)) 100%);
+}
+body[data-style="vivid"] .stage{ box-shadow:0 4px 16px rgba(27,42,54,.09) }
+body[data-style="vivid"] .stage-head{ border-bottom-width:2px }
+body[data-style="vivid"] .ccard{ border-radius:12px }
+body[data-style="vivid"] .stage:nth-of-type(6n+1) .stage-dot{ background:#0F7B6C }
+body[data-style="vivid"] .stage:nth-of-type(6n+2) .stage-dot{ background:#2F6FED }
+body[data-style="vivid"] .stage:nth-of-type(6n+3) .stage-dot{ background:#D6336C }
+body[data-style="vivid"] .stage:nth-of-type(6n+4) .stage-dot{ background:#F5A623 }
+body[data-style="vivid"] .stage:nth-of-type(6n+5) .stage-dot{ background:#12B76A }
+body[data-style="vivid"] .stage:nth-of-type(6n+6) .stage-dot{ background:#8B5CF6 }
+body[data-style="vivid"] .stage:nth-of-type(6n+1) .stage-head{ background:color-mix(in srgb, #0F7B6C 22%, var(--band)); border-bottom-color:#0F7B6C }
+body[data-style="vivid"] .stage:nth-of-type(6n+2) .stage-head{ background:color-mix(in srgb, #2F6FED 22%, var(--band)); border-bottom-color:#2F6FED }
+body[data-style="vivid"] .stage:nth-of-type(6n+3) .stage-head{ background:color-mix(in srgb, #D6336C 22%, var(--band)); border-bottom-color:#D6336C }
+body[data-style="vivid"] .stage:nth-of-type(6n+4) .stage-head{ background:color-mix(in srgb, #F5A623 26%, var(--band)); border-bottom-color:#F5A623 }
+body[data-style="vivid"] .stage:nth-of-type(6n+5) .stage-head{ background:color-mix(in srgb, #12B76A 22%, var(--band)); border-bottom-color:#12B76A }
+body[data-style="vivid"] .stage:nth-of-type(6n+6) .stage-head{ background:color-mix(in srgb, #8B5CF6 22%, var(--band)); border-bottom-color:#8B5CF6 }
+body[data-style="vivid"] .stage:nth-of-type(6n+1){ background:color-mix(in srgb, #0F7B6C 7%, var(--band)); border-color:color-mix(in srgb, #0F7B6C 30%, var(--rule)) }
+body[data-style="vivid"] .stage:nth-of-type(6n+2){ background:color-mix(in srgb, #2F6FED 7%, var(--band)); border-color:color-mix(in srgb, #2F6FED 30%, var(--rule)) }
+body[data-style="vivid"] .stage:nth-of-type(6n+3){ background:color-mix(in srgb, #D6336C 7%, var(--band)); border-color:color-mix(in srgb, #D6336C 30%, var(--rule)) }
+body[data-style="vivid"] .stage:nth-of-type(6n+4){ background:color-mix(in srgb, #F5A623 9%, var(--band)); border-color:color-mix(in srgb, #F5A623 30%, var(--rule)) }
+body[data-style="vivid"] .stage:nth-of-type(6n+5){ background:color-mix(in srgb, #12B76A 7%, var(--band)); border-color:color-mix(in srgb, #12B76A 30%, var(--rule)) }
+body[data-style="vivid"] .stage:nth-of-type(6n+6){ background:color-mix(in srgb, #8B5CF6 7%, var(--band)); border-color:color-mix(in srgb, #8B5CF6 30%, var(--rule)) }
+
+body[data-style="pastel"] .stage{ background:var(--accent-l); border-color:transparent; border-radius:16px }
+body[data-style="pastel"] .stage-head{ border-bottom-color:transparent }
+body[data-style="pastel"] .ccard{ border-radius:14px; border-color:transparent; box-shadow:0 2px 8px rgba(27,42,54,.07) }
+body[data-style="pastel"] #topbar{ background:var(--ink) }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:14px;
+}
+button{font-family:inherit; cursor:pointer}
+input,select,textarea{font-family:inherit; font-size:14px}
+::-webkit-scrollbar{height:10px; width:10px}
+::-webkit-scrollbar-thumb{background:var(--rule); border-radius:6px}
+
+/* ---------- top bar ---------- */
+#topbar{
+  height:56px; display:flex; align-items:center; gap:14px; padding:0 18px;
+  background:var(--ink); color:#fff; position:sticky; top:0; z-index:40;
+}
+[data-theme="dark"] #topbar{background:#10161C}
+#brand{display:flex; align-items:center; gap:8px; font-weight:800; font-size:15px; white-space:nowrap}
+#brand .mark{width:22px; height:22px; border-radius:5px; background:var(--accent); display:inline-block}
+#spacer{flex:1}
+.topbtn{
+  background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.14);
+  border-radius:8px; padding:8px 12px; font-size:13px; font-weight:600; white-space:nowrap;
+}
+.topbtn.accent{background:var(--accent); border-color:var(--accent)}
+
+/* ---------- toolbar ---------- */
+#toolbar{
+  display:flex; align-items:center; gap:10px; padding:12px 18px; background:var(--card);
+  border-bottom:1px solid var(--rule); flex-wrap:wrap; position:sticky; top:56px; z-index:30;
+}
+.viewswitch{display:flex; background:var(--band); border:1px solid var(--rule); border-radius:9px; padding:3px; gap:2px}
+.viewswitch button{
+  border:none; background:transparent; color:var(--grey); font-size:12.5px; font-weight:700;
+  padding:6px 14px; border-radius:7px; white-space:nowrap;
+}
+.viewswitch button.on{background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(27,42,54,.14)}
+#toolbar input[type=search]{
+  padding:8px 12px; border:1px solid var(--rule); border-radius:8px; background:var(--bg);
+  color:var(--ink); min-width:190px;
+}
+#toolbar select{ padding:8px 10px; border:1px solid var(--rule); border-radius:8px; background:var(--bg); color:var(--ink)}
+.chip-toggle{
+  padding:7px 12px; border-radius:999px; border:1px solid var(--rule); background:var(--bg);
+  color:var(--grey); font-size:12.5px; font-weight:700;
+}
+.chip-toggle.on{background:var(--alert); border-color:var(--alert); color:#fff}
+#stats{display:flex; gap:16px; margin-left:auto; font-size:12.5px; color:var(--grey); font-weight:600}
+#stats b{color:var(--ink); font-size:14px}
+#stats .warn b{color:var(--alert)}
+
+body[data-view="dash"] #searchBox,
+body[data-view="dash"] #filterStage,
+body[data-view="dash"] #filterSource,
+body[data-view="dash"] #filterFollow,
+body[data-view="dash"] #stats{display:none}
+body[data-view="pipe"] #listWrap, body[data-view="pipe"] #dashWrap{display:none}
+body[data-view="list"] #pipeWrap, body[data-view="list"] #dashWrap{display:none}
+body[data-view="dash"] #pipeWrap, body[data-view="dash"] #listWrap{display:none}
+
+/* ---------- pipeline ---------- */
+#pipeWrap{ padding:18px; overflow-x:auto; min-height:calc(100vh - 118px)}
+#stages{display:flex; gap:14px; align-items:flex-start}
+.stage{
+  background:var(--band); border:1px solid var(--rule); border-radius:12px; width:290px; flex:none;
+  display:flex; flex-direction:column; max-height:calc(100vh - 150px);
+}
+.stage-head{padding:12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--rule)}
+.stage-dot{width:10px; height:10px; border-radius:50%; background:var(--accent); flex:none}
+.stage-title{font-weight:800; font-size:13.5px; flex:1; background:transparent; border:none; color:var(--ink); outline:none}
+.stage-count{font-size:11.5px; color:var(--grey); background:var(--card); border:1px solid var(--rule); border-radius:999px; padding:2px 8px; font-weight:700}
+.stage-sum{padding:6px 12px 8px; font-size:12px; color:var(--grey); font-weight:700; border-bottom:1px solid var(--rule)}
+.stage-sum b{color:var(--accent); font-size:13.5px}
+.stage-prob{width:38px; font:inherit; font-weight:700; color:var(--grey); background:transparent;
+  border:none; border-bottom:1px dashed var(--rule); padding:0; text-align:right; outline:none;
+  -moz-appearance:textfield}
+.stage-prob::-webkit-outer-spin-button,.stage-prob::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+.stage-prob:hover,.stage-prob:focus{color:var(--ink); border-bottom-color:var(--accent)}
+.stage-prob-lab{font-weight:700}
+@media print{ .stage-prob{border-bottom:none} }
+.stage-body{padding:8px; overflow-y:auto; flex:1; min-height:60px}
+.stage-body.dragover{background:var(--accent-l); outline:2px dashed var(--accent); outline-offset:-4px; border-radius:8px}
+.stage-add{margin:4px 8px 10px; padding:8px; width:calc(100% - 16px); border:1px dashed var(--rule); background:transparent; border-radius:8px; color:var(--grey); font-size:12.5px; font-weight:700}
+.stage-add:hover{border-color:var(--accent); color:var(--accent)}
+
+/* ---------- client card ---------- */
+.ccard{
+  background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:10px 11px;
+  margin-bottom:8px; box-shadow:var(--shadow); cursor:grab; position:relative;
+}
+.ccard.dragging{opacity:.4}
+.ccard-name{font-size:13.5px; font-weight:800; line-height:1.3}
+.ccard-co{font-size:11.5px; color:var(--grey); font-weight:600; margin-top:2px}
+.ccard-val{font-size:13px; font-weight:800; color:var(--accent); margin-top:6px}
+.ccard-meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:7px}
+.pillx{font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:var(--band); color:var(--grey)}
+.pillx.overdue{color:var(--alert); background:var(--alert-l)}
+.pillx.today{color:var(--amber); background:var(--amber-l)}
+.pillx.soon{color:var(--navy); background:var(--navy-l)}
+.pillx.src{color:var(--plum); background:var(--plum-l)}
+.pillx.task{color:var(--navy); background:var(--navy-l)}
+.pri-dot{width:9px; height:9px; border-radius:50%; flex:none; display:inline-block}
+.pri-picker{display:flex; gap:6px}
+.pri-opt{flex:1; padding:8px 4px; border:1px solid var(--rule); border-radius:8px; text-align:center; font-size:12px; font-weight:700; color:var(--grey); background:var(--bg); cursor:pointer}
+.pri-opt.sel{color:#fff; border-color:transparent}
+.task-list{display:flex; flex-direction:column; gap:6px}
+.task-item{display:flex; align-items:center; gap:8px}
+.task-item input[type=checkbox]{width:16px; height:16px; flex:none}
+.task-item input[type=text]{flex:1; border:none; background:transparent; border-bottom:1px solid var(--rule); padding:4px 2px; color:var(--ink)}
+.task-item input[type=date]{width:140px; flex:none; border:1px solid var(--rule); border-radius:6px; padding:4px 6px; background:var(--bg); color:var(--ink); font-size:12px}
+.task-item.done input[type=text]{text-decoration:line-through; color:var(--grey)}
+.task-del{background:none; border:none; color:var(--grey); font-size:15px}
+.addtask{background:none; border:1px dashed var(--rule); border-radius:8px; padding:7px; font-size:12px; color:var(--grey); font-weight:700; width:100%}
+.tagx{font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; background:var(--accent-l); color:var(--accent-d)}
+
+/* ---------- client list ---------- */
+#listWrap{padding:18px; overflow-x:auto}
+table.ctable{width:100%; border-collapse:collapse; font-size:13px; background:var(--card);
+  border:1px solid var(--rule); border-radius:12px; overflow:hidden}
+table.ctable th{
+  text-align:left; font-size:10.5px; font-weight:800; color:var(--grey); text-transform:uppercase;
+  letter-spacing:.4px; padding:12px 12px; background:var(--band); border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+table.ctable th.num, table.ctable td.num{text-align:right; font-variant-numeric:tabular-nums}
+table.ctable td{padding:12px; border-bottom:1px solid var(--rule); vertical-align:middle}
+table.ctable tr:last-child td{border-bottom:none}
+table.ctable tbody tr{cursor:pointer}
+table.ctable tbody tr:hover{background:var(--band)}
+td.nm{font-weight:800}
+td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px; margin-top:2px}
+.stagechip{font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; white-space:nowrap}
+
+/* ---------- dashboard ---------- */
+#dashWrap{padding:22px 18px 40px; max-width:1340px; margin:0 auto}
+.dash-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px}
+.kpi{
+  background:var(--card); border:1px solid var(--rule); border-radius:14px; padding:16px 18px;
+  box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--kpi-c,var(--accent))}
+.kpi .kpi-label{font-size:10.5px; font-weight:800; color:var(--grey); text-transform:uppercase; letter-spacing:.5px}
+.kpi .kpi-num{font-size:32px; font-weight:800; line-height:1.15; margin-top:6px; font-variant-numeric:tabular-nums; color:var(--kpi-c,var(--ink))}
+.kpi .kpi-sub{font-size:11.5px; color:var(--grey); font-weight:600; margin-top:2px}
+.dash-row{display:grid; grid-template-columns:300px 1fr; gap:14px; margin-bottom:16px}
+.dash-row.two{grid-template-columns:1fr 1fr}
+.panel{background:var(--card); border:1px solid var(--rule); border-radius:14px; padding:18px 20px 20px; box-shadow:var(--shadow)}
+.panel h3{margin:0 0 16px; font-size:10.5px; font-weight:800; color:var(--grey); text-transform:uppercase; letter-spacing:.5px}
+.ringwrap{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px}
+.ring-pct{font-size:28px; font-weight:800; font-variant-numeric:tabular-nums}
+.ring-sub{font-size:12px; color:var(--grey); font-weight:600; text-align:center}
+.bar-row{display:flex; align-items:center; gap:12px; margin-bottom:13px; font-size:12.5px}
+.bar-row:last-child{margin-bottom:0}
+.bar-name{width:120px; flex:none; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.bar-track{flex:1; height:9px; border-radius:6px; background:var(--band); overflow:hidden}
+.bar-fill{height:100%; border-radius:6px; background:var(--accent)}
+.bar-val{width:110px; flex:none; text-align:right; color:var(--grey); font-weight:700; font-variant-numeric:tabular-nums}
+.fu-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--rule); font-size:12.5px}
+.fu-row:last-child{border-bottom:none}
+.fu-dot{width:8px; height:8px; border-radius:50%; flex:none}
+.fu-name{flex:1; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fu-co{color:var(--grey); font-weight:600; font-size:11.5px; flex:none}
+.dash-empty{color:var(--grey); font-size:12.5px; padding:14px 0}
+@media (max-width:980px){ .dash-grid{grid-template-columns:repeat(2,1fr)} .dash-row,.dash-row.two{grid-template-columns:1fr} }
+
+/* ---------- style popover ---------- */
+#stylePanel{
+  position:absolute; top:52px; right:18px; width:280px; background:var(--card); border:1px solid var(--rule);
+  border-radius:12px; box-shadow:0 12px 36px rgba(0,0,0,.18); padding:14px; z-index:50; display:none;
+}
+#stylePanel.show{display:block}
+#stylePanel h4{margin:0 0 8px; font-size:11px; font-weight:800; color:var(--grey); text-transform:uppercase; letter-spacing:.3px}
+#stylePanel .swatches{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
+.swatch{width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer; flex:none}
+.swatch.sel{border-color:var(--ink); box-shadow:0 0 0 2px var(--card)}
+#stylePanel .hexrow{display:flex; gap:6px; align-items:center; margin-bottom:16px}
+#stylePanel .hexrow input[type=color]{width:32px; height:32px; border:1px solid var(--rule); border-radius:6px; padding:0; background:none}
+#stylePanel .hexrow input[type=text]{flex:1; padding:6px 8px; border:1px solid var(--rule); border-radius:6px; background:var(--bg); color:var(--ink); font-size:12px}
+.style-opt{display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; border:1px solid var(--rule); margin-bottom:6px; cursor:pointer}
+.style-opt.sel{border-color:var(--accent); background:var(--accent-l)}
+.style-opt .style-swatch{width:36px; height:26px; border-radius:6px; flex:none}
+.style-opt .style-label{font-size:12.5px; font-weight:700}
+.style-opt .style-sub{font-size:11px; color:var(--grey); font-weight:500}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed; inset:0; background:rgba(15,20,25,.5); display:none; align-items:flex-start; justify-content:center; z-index:100; padding:40px 16px; overflow-y:auto}
+.overlay.show{display:flex}
+.modal{background:var(--card); border-radius:14px; width:100%; max-width:600px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--rule)}
+.modal-head{display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--rule)}
+.modal-head h3{margin:0; font-size:15px}
+.modal-close{background:none; border:none; font-size:20px; color:var(--grey); padding:2px 8px; border-radius:6px}
+.modal-close:hover{background:var(--band)}
+.modal-body{padding:16px 18px; display:flex; flex-direction:column; gap:14px; max-height:70vh; overflow-y:auto}
+.field label{display:block; font-size:11px; font-weight:800; color:var(--grey); text-transform:uppercase; letter-spacing:.3px; margin-bottom:5px}
+.field input[type=text], .field input[type=date], .field input[type=number], .field input[type=email], .field textarea, .field select{
+  width:100%; padding:9px 10px; border:1px solid var(--rule); border-radius:8px; background:var(--bg); color:var(--ink);
+}
+.field textarea{resize:vertical; min-height:56px}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+.modal-foot{display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-top:1px solid var(--rule); gap:10px}
+.btn{padding:9px 16px; border-radius:8px; border:1px solid var(--rule); background:var(--bg); color:var(--ink); font-weight:700; font-size:13px}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.danger{color:var(--alert); border-color:var(--alert-l); background:var(--alert-l)}
+.log-list{display:flex; flex-direction:column; gap:8px}
+.log-item{display:flex; gap:10px; align-items:flex-start; padding:9px 10px; background:var(--band); border-radius:8px; font-size:12.5px}
+.log-item .ld{font-weight:800; color:var(--grey); white-space:nowrap; font-size:11.5px}
+.log-item .lt{font-weight:800; color:var(--accent); white-space:nowrap; font-size:11.5px}
+.log-item .ln{flex:1}
+.log-del{background:none; border:none; color:var(--grey); font-size:15px}
+.addlog{display:grid; grid-template-columns:130px 120px 1fr auto; gap:8px; align-items:center}
+.addlog input, .addlog select{padding:8px; border:1px solid var(--rule); border-radius:8px; background:var(--bg); color:var(--ink); font-size:13px}
+
+/* ---------- misc ---------- */
+.empty{padding:30px 10px; text-align:center; color:var(--grey); font-size:12.5px}
+.toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:600; box-shadow:var(--shadow); z-index:200; opacity:0; pointer-events:none; transition:opacity .2s}
+.toast.show{opacity:1}
+
+@media print{
+  #topbar,#toolbar,.stage-add,.overlay,#stylePanel{display:none !important}
+  #pipeWrap,#listWrap,#dashWrap{padding:0}
+  .stage{max-height:none; break-inside:avoid}
+  #stages{flex-wrap:wrap}
+}
+@media (max-width:640px){
+  #stats{display:none}
+  .stage{width:250px}
+}
+.demo-banner{position:sticky;top:0;z-index:9999;background:#B9770E;color:#fff;font:600 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;text-align:center;padding:9px 14px}
+.demo-banner a{color:#fff;text-decoration:underline}
+.demo-banner .x{position:absolute;right:10px;top:6px;background:none;border:none;color:#fff;font:inherit;cursor:pointer;opacity:.85;padding:4px 8px}
+.demo-banner .x:hover{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="demo-banner" id="demoBanner">DEMO — example data, add up to 15 of your own clients and see whether it thinks the way you do. Nothing is saved permanently and it can reset any time. <a href="https://www.etsy.com/shop/LedgerLoopStudio" target="_blank" rel="noopener">Buy the full version</a> for your own unlimited, permanent copy.<button class="x" onclick="document.getElementById('demoBanner').style.display='none'" aria-label="Dismiss">✕</button></div>
+
+<div id="topbar">
+  <div id="brand"><span class="mark"></span>Client Tracker</div>
+  <div id="spacer"></div>
+  <button class="topbtn" id="addClientBtn">+ New client</button>
+  <button class="topbtn" id="styleBtn">🎨 Style</button>
+  <button class="topbtn" id="themeBtn">🌙 Dark</button>
+  <button class="topbtn" id="printBtn">🖨 Print</button>
+  <button class="topbtn" id="exportBtn">⬇ Backup</button>
+  <button class="topbtn" id="importBtn">⬆ Restore</button>
+  <input type="file" id="importFile" accept="application/json" style="display:none">
+  <button class="topbtn accent" id="helpBtn">?</button>
+</div>
+
+<div id="stylePanel">
+  <h4>Accent colour</h4>
+  <div class="swatches" id="swatches"></div>
+  <div class="hexrow">
+    <input type="color" id="customColor" value="#0F7B6C">
+    <input type="text" id="customHex" placeholder="#0F7B6C" maxlength="7">
+  </div>
+  <h4>Board style</h4>
+  <div id="styleOpts"></div>
+</div>
+
+<div id="toolbar">
+  <div class="viewswitch">
+    <button id="viewPipe" class="on">Pipeline</button>
+    <button id="viewList">Clients</button>
+    <button id="viewDash">Dashboard</button>
+  </div>
+  <input type="search" id="searchBox" placeholder="Search name, company, email…">
+  <select id="filterStage"><option value="">All stages</option></select>
+  <select id="filterSource"><option value="">All sources</option></select>
+  <button class="chip-toggle" id="filterFollow">⚠ Follow-up due</button>
+  <div id="stats">
+    <span>Clients <b id="statClients">0</b></span>
+    <span>Open pipeline <b id="statPipe">0</b></span>
+    <span class="warn">Follow-ups due <b id="statDue">0</b></span>
+    <span>Tasks due <b id="statTasks">0</b></span>
+  </div>
+</div>
+
+<div id="pipeWrap"><div id="stages"></div></div>
+<div id="listWrap"></div>
+<div id="dashWrap"></div>
+
+<!-- Client modal -->
+<div class="overlay" id="clientOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="clientModalTitle">Client</h3>
+      <button class="modal-close" id="clientModalClose">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="row2">
+        <div class="field"><label>Name</label><input type="text" id="f-name" placeholder="e.g. Sarah Whitfield"></div>
+        <div class="field"><label>Company / project</label><input type="text" id="f-company" placeholder="e.g. Northgate Studio"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Email</label><input type="email" id="f-email" placeholder="name@company.com"></div>
+        <div class="field"><label>Phone</label><input type="text" id="f-phone" placeholder="+44 …"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Stage</label><select id="f-stage"></select></div>
+        <div class="field"><label>Deal value</label><input type="number" id="f-value" min="0" step="1" placeholder="0"></div>
+        <div class="field"><label>Source</label><select id="f-source"></select></div>
+      </div>
+      <div class="field">
+        <label>Priority</label>
+        <div class="pri-picker" id="f-priority">
+          <div class="pri-opt" data-v="low">Low</div>
+          <div class="pri-opt" data-v="med">Medium</div>
+          <div class="pri-opt" data-v="high">High</div>
+          <div class="pri-opt" data-v="urgent">Urgent</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Last contacted</label><input type="date" id="f-last"></div>
+        <div class="field"><label>Next follow-up</label><input type="date" id="f-next"></div>
+      </div>
+      <div class="field"><label>Tags (comma separated)</label><input type="text" id="f-tags" placeholder="retainer, priority"></div>
+      <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="What matters about this client…"></textarea></div>
+      <div class="field">
+        <label>Tasks for this client</label>
+        <div class="task-list" id="f-tasks"></div>
+        <button class="addtask" id="addTaskBtn" style="margin-top:8px">+ Add task</button>
+      </div>
+      <div class="field">
+        <label>Contact log</label>
+        <div class="log-list" id="f-log"></div>
+        <div class="addlog" style="margin-top:8px">
+          <input type="date" id="logDate">
+          <select id="logType">
+            <option>Call</option><option>Email</option><option>Meeting</option>
+            <option>Proposal</option><option>Note</option>
+          </select>
+          <input type="text" id="logNote" placeholder="What was said…">
+          <button class="btn" id="addLogBtn">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger" id="deleteClientBtn">Delete client</button>
+      <div style="display:flex; gap:8px">
+        <button class="btn" id="cancelClientBtn">Cancel</button>
+        <button class="btn primary" id="saveClientBtn">Save client</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+"use strict";
+
+/* ============================================================ constants */
+var LS_KEY = "llsClientCRM_v1";
+var PRESETS = [
+  {name:"Teal",    hex:"#0F7B6C"}, {name:"Blue",   hex:"#2F6FED"},
+  {name:"Magenta", hex:"#D6336C"}, {name:"Amber",  hex:"#F59E0B"},
+  {name:"Purple",  hex:"#8B5CF6"}, {name:"Green",  hex:"#12B76A"},
+  {name:"Red",     hex:"#E4572E"}, {name:"Navy",   hex:"#2E5C8A"}
+];
+var STYLES = [
+  {key:"minimal", label:"Minimal", sub:"Clean, one accent colour", hex:"#5A6B78"},
+  {key:"vivid",   label:"Vivid",   sub:"Each stage gets its own colour", hex:"#D6336C"},
+  {key:"pastel",  label:"Pastel",  sub:"Soft tinted stages, rounded", hex:"#8B5CF6"}
+];
+/* Open stages rotate through these. Green and grey are reserved so that a
+   won stage always reads green and a lost stage always reads grey, whatever
+   the user renames them to. */
+var STAGE_COLS = ["#0F7B6C","#2F6FED","#D6336C","#F5A623","#8B5CF6","#0891B2"];
+var WON_COL = "#12B76A", LOST_COL = "#5A6B78";
+var DEFAULT_SOURCES = ["Referral","Website","Instagram","Repeat client","Cold outreach","Marketplace"];
+var LOG_TYPES = ["Call","Email","Meeting","Proposal","Note"];
+var PRI = {
+  low:    {label:"Low",    color:"#5A6B78", rank:0},
+  med:    {label:"Medium", color:"#2E5C8A", rank:1},
+  high:   {label:"High",   color:"#B9770E", rank:2},
+  urgent: {label:"Urgent", color:"#C0392B", rank:3}
+};
+
+/* ============================================================ state */
+var DB = null;
+/* ---- demo-only limit: this block exists only in the public try-it demo, never in the sold product ---- */
+var DEMO_MODE = true, DEMO_CLIENT_LIMIT = 22; /* 7 seeded + 15 room to try adding your own */
+function demoLimitReached(){
+  if(!DEMO_MODE) return false;
+  if(!DB || !DB.clients || DB.clients.length < DEMO_CLIENT_LIMIT) return false;
+  alert("You've reached the "+DEMO_CLIENT_LIMIT+"-client demo limit.\n\nThis is just a preview — buy the full version for unlimited clients, all features unlocked, and your own permanent copy.");
+  return true;
+}
+var state = { view:"pipe", search:"", filterStage:"", filterSource:"", filterFollow:false,
+              editingClient:null, logDraft:null };
+
+/* ============================================================ helpers */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayISO(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function daysBetween(a,b){
+  if(!a || !b) return null;
+  var d1 = new Date(a+"T00:00:00"), d2 = new Date(b+"T00:00:00");
+  return Math.round((d2-d1)/86400000);
+}
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+});}
+function money(n){
+  var v = Math.round(Number(n)||0);
+  return (DB && DB.settings && DB.settings.currency ? DB.settings.currency : "$")
+    + v.toLocaleString("en-US");
+}
+function toast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ t.classList.remove("show"); }, 1800);
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }
+
+/* ============================================================ pure logic
+   Everything below this line takes plain data and returns plain data, so it can
+   be unit-tested in plain Node with no DOM. Keep it that way. */
+
+/* A stage counts as closed-won at prob 100, closed-lost at prob 0 with won=false. */
+function isOpenStage(st){ return !!st && st.prob > 0 && st.prob < 100; }
+function isWonStage(st){ return !!st && st.prob >= 100; }
+function isLostStage(st){ return !!st && st.prob <= 0; }
+
+/* Follow-up state for one client relative to `today`. */
+function followState(c, today){
+  if(!c || !c.next) return { key:"none", label:"No follow-up", days:null };
+  var d = daysBetween(today, c.next);
+  if(d === null) return { key:"none", label:"No follow-up", days:null };
+  if(d < 0)   return { key:"overdue", label:(-d)+"d overdue", days:d };
+  if(d === 0) return { key:"today",   label:"Due today",      days:0 };
+  if(d <= 7)  return { key:"soon",    label:"In "+d+"d",      days:d };
+  return { key:"later", label:"In "+d+"d", days:d };
+}
+
+/* Is this client awaiting action today or earlier? */
+function needsFollowUp(c, today){
+  var k = followState(c, today).key;
+  return k === "overdue" || k === "today";
+}
+
+/* Open tasks on one client, with the soonest due date first. */
+function openTasks(c){
+  return (c.tasks||[]).filter(function(t){ return !t.done; });
+}
+
+/* Tasks that are due today or already late, across every client. */
+function taskQueue(clients, today){
+  var out = [];
+  clients.forEach(function(c){
+    (c.tasks||[]).forEach(function(t){
+      if(t.done || !t.due) return;
+      var d = daysBetween(today, t.due);
+      if(d === null || d > 7) return;
+      out.push({ clientId:c.id, client:c.name, company:c.company||"",
+                 text:t.text, due:t.due, days:d,
+                 key: d < 0 ? "overdue" : d === 0 ? "today" : "soon" });
+    });
+  });
+  return out.sort(function(a,b){ return a.days - b.days; });
+}
+
+/* Everything the dashboard and the toolbar show. */
+function crmStats(clients, stages, today){
+  var byId = {};
+  stages.forEach(function(s){ byId[s.id] = s; });
+
+  var open = [], won = [], lost = [];
+  clients.forEach(function(c){
+    var st = byId[c.stageId];
+    if(isWonStage(st)) won.push(c);
+    else if(isLostStage(st)) lost.push(c);
+    else open.push(c);
+  });
+
+  function sum(list){ return list.reduce(function(a,c){ return a + (Number(c.value)||0); }, 0); }
+
+  var weighted = 0;
+  open.forEach(function(c){
+    var st = byId[c.stageId];
+    weighted += (Number(c.value)||0) * ((st ? st.prob : 0) / 100);
+  });
+
+  var openIdx = 0;
+  var byStage = stages.map(function(s, i){
+    var list = clients.filter(function(c){ return c.stageId === s.id; });
+    var col;
+    if(isWonStage(s)) col = WON_COL;
+    else if(isLostStage(s)) col = LOST_COL;
+    else col = STAGE_COLS[(openIdx++) % STAGE_COLS.length];
+    return { id:s.id, name:s.name, prob:s.prob, count:list.length, value:sum(list), color: col };
+  });
+
+  var srcMap = {};
+  clients.forEach(function(c){
+    var k = (c.source||"").trim() || "Unspecified";
+    if(!srcMap[k]) srcMap[k] = { source:k, count:0, value:0, won:0 };
+    srcMap[k].count++;
+    srcMap[k].value += (Number(c.value)||0);
+    if(isWonStage(byId[c.stageId])) srcMap[k].won++;
+  });
+  var bySource = Object.keys(srcMap).map(function(k){ return srcMap[k]; })
+    .sort(function(a,b){ return b.count-a.count || a.source.localeCompare(b.source); });
+
+  var tq = taskQueue(clients, today);
+  var tasksLate = tq.filter(function(t){ return t.key === "overdue" || t.key === "today"; });
+  var tasksOpen = clients.reduce(function(a,c){ return a + openTasks(c).length; }, 0);
+
+  var overdue = clients.filter(function(c){ return followState(c,today).key === "overdue"; });
+  var dueToday = clients.filter(function(c){ return followState(c,today).key === "today"; });
+  var dueSoon = clients.filter(function(c){ return followState(c,today).key === "soon"; });
+
+  /* Who to contact, worst first, then by value. */
+  var followList = overdue.concat(dueToday).concat(dueSoon)
+    .sort(function(a,b){
+      var da = followState(a,today).days, db_ = followState(b,today).days;
+      if(da !== db_) return da - db_;
+      return (Number(b.value)||0) - (Number(a.value)||0);
+    })
+    .slice(0,6);
+
+  var stale = clients.filter(function(c){
+    if(!isOpenStage(byId[c.stageId])) return false;
+    var d = c.last ? daysBetween(c.last, today) : null;
+    return d !== null && d >= 30;
+  });
+
+  var total = clients.length;
+  var closed = won.length + lost.length;
+
+  return {
+    total: total,
+    open: open.length,
+    won: won.length,
+    lost: lost.length,
+    openValue: sum(open),
+    wonValue: sum(won),
+    weighted: Math.round(weighted),
+    winRate: closed ? Math.round(100 * won.length / closed) : 0,
+    closedCount: closed,
+    overdue: overdue.length,
+    dueToday: dueToday.length,
+    dueThisWeek: dueSoon.length,
+    needsAction: overdue.length + dueToday.length,
+    staleCount: stale.length,
+    tasksOpen: tasksOpen,
+    tasksDue: tasksLate.length,
+    taskQueue: tq.slice(0,6),
+    byStage: byStage,
+    byPriority: ["urgent","high","med","low"].map(function(k){
+      return { key:k, label:PRI[k].label, color:PRI[k].color,
+               count: open.filter(function(c){ return (c.priority||"med") === k; }).length };
+    }),
+    bySource: bySource,
+    followList: followList.map(function(c){
+      var f = followState(c, today);
+      return { id:c.id, name:c.name, company:c.company||"", value:Number(c.value)||0,
+               label:f.label, key:f.key };
+    })
+  };
+}
+
+/* Search + filter, shared by the pipeline and the client table. */
+function matchesFilters(c, st, today){
+  if(st.search){
+    var q = st.search.toLowerCase();
+    var hay = ((c.name||"")+" "+(c.company||"")+" "+(c.email||"")+" "+
+               (c.notes||"")+" "+((c.tags||[]).join(" "))).toLowerCase();
+    if(hay.indexOf(q) === -1) return false;
+  }
+  if(st.filterStage && c.stageId !== st.filterStage) return false;
+  if(st.filterSource && (c.source||"") !== st.filterSource) return false;
+  if(st.filterFollow && !needsFollowUp(c, today)) return false;
+  return true;
+}
+
+/* Sort key for the client table: most urgent thing first. */
+function urgencyRank(c, today){
+  var f = followState(c, today);
+  var fd = f.days === null ? 99999 : f.days;
+  var tq = openTasks(c).filter(function(t){ return t.due; })
+    .map(function(t){ return daysBetween(today, t.due); })
+    .filter(function(d){ return d !== null; });
+  var td = tq.length ? Math.min.apply(null, tq) : 99999;
+  return Math.min(fd, td);
+}
+/* ============================================================ seed / load */
+function seedIfEmpty(){
+  var raw = localStorage.getItem(LS_KEY);
+  if(raw){
+    try{
+      DB = JSON.parse(raw);
+      if(DB && DB.clients && DB.stages){
+        if(!DB.settings) DB.settings = {};
+        if(!DB.settings.accent) DB.settings.accent = "#0F7B6C";
+        if(!DB.settings.style) DB.settings.style = "vivid";
+        if(!DB.settings.currency) DB.settings.currency = "$";
+        if(!DB.settings.styleSeeded){ DB.settings.style = "vivid"; DB.settings.styleSeeded = true; }
+        if(!DB.sources) DB.sources = DEFAULT_SOURCES.slice();
+        DB.clients.forEach(function(c){
+          if(!c.tasks) c.tasks = [];
+          if(!c.priority) c.priority = "med";
+          if(!c.log) c.log = [];
+          if(!c.tags) c.tags = [];
+        });
+        return;
+      }
+    }catch(e){}
+  }
+  var s1=uid(), s2=uid(), s3=uid(), s4=uid(), s5=uid();
+  function plus(n){ var d=new Date(); d.setDate(d.getDate()+n);
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+
+  DB = {
+    settings:{ theme:"light", accent:"#0F7B6C", style:"vivid", styleSeeded:true, currency:"$" },
+    stages:[
+      {id:s1, name:"Lead",     prob:10},
+      {id:s2, name:"Contacted",prob:30},
+      {id:s3, name:"Proposal", prob:60},
+      {id:s4, name:"Won",      prob:100},
+      {id:s5, name:"Lost",     prob:0}
+    ],
+    sources: DEFAULT_SOURCES.slice(),
+    clients:[
+      {id:uid(), name:"Sarah Whitfield", company:"Northgate Studio", email:"sarah@northgate.co",
+       phone:"+44 7700 900123", stageId:s3, value:2400, source:"Referral", priority:"high",
+       last:plus(-4), next:plus(-2), tags:["priority"], notes:"Wants the full brand refresh. Budget confirmed.",
+       tasks:[{id:uid(), text:"Send revised quote", due:plus(-1), done:false},
+              {id:uid(), text:"Book the kickoff call", due:plus(4), done:false},
+              {id:uid(), text:"Collect brand assets", due:"", done:true}],
+       log:[{id:uid(), date:plus(-12), type:"Call", note:"Intro call — needs it before Q4 launch."},
+            {id:uid(), date:plus(-4),  type:"Proposal", note:"Sent proposal v2 with the reduced scope."}],
+       order:0},
+      {id:uid(), name:"Daniel Reyes", company:"Reyes LLC", email:"dan@reyesllc.com",
+       phone:"", stageId:s4, value:1800, source:"Repeat client", priority:"med",
+       last:plus(-9), next:"", tags:["retainer"], notes:"Signed. Monthly retainer starts next month.",
+       tasks:[{id:uid(), text:"Send welcome pack", due:"", done:true}],
+       log:[{id:uid(), date:plus(-9), type:"Meeting", note:"Kickoff booked. Deposit paid."}],
+       order:0},
+      {id:uid(), name:"Amara Okafor", company:"Harlow & Co.", email:"amara@harlowco.com",
+       phone:"", stageId:s2, value:3600, source:"Website", priority:"urgent",
+       last:plus(-6), next:todayISO(), tags:[], notes:"Asked for case studies in her sector.",
+       tasks:[{id:uid(), text:"Send 3 case studies", due:todayISO(), done:false}],
+       log:[{id:uid(), date:plus(-6), type:"Email", note:"Sent portfolio. She replied asking for pricing."}],
+       order:0},
+      {id:uid(), name:"Tom Vale", company:"Vale & Finch", email:"tom@valefinch.com",
+       phone:"", stageId:s1, value:900, source:"Instagram", priority:"low",
+       last:plus(-2), next:plus(3), tags:[], notes:"Small first job, could grow.",
+       tasks:[], log:[], order:0},
+      {id:uid(), name:"Priya Nair", company:"Ardent Labs", email:"priya@ardentlabs.io",
+       phone:"", stageId:s3, value:5200, source:"Referral", priority:"urgent",
+       last:plus(-1), next:plus(5), tags:["priority"], notes:"Biggest open deal. Two decision makers.",
+       tasks:[{id:uid(), text:"Draft the SOW", due:plus(2), done:false},
+              {id:uid(), text:"Confirm both approvers", due:plus(6), done:false}],
+       log:[{id:uid(), date:plus(-1), type:"Call", note:"Walked through the scope. Sending SOW."}],
+       order:1},
+      {id:uid(), name:"Marcus Bell", company:"Bell Fitness", email:"marcus@bellfit.com",
+       phone:"", stageId:s2, value:1200, source:"Cold outreach", priority:"med",
+       last:plus(-41), next:plus(-9), tags:[], notes:"Went quiet after the first reply.",
+       tasks:[{id:uid(), text:"Final nudge, then close as lost", due:plus(-3), done:false}],
+       log:[{id:uid(), date:plus(-41), type:"Email", note:"First outreach. Positive reply, then silence."}],
+       order:1},
+      {id:uid(), name:"Elena Fischer", company:"Fischer Interiors", email:"elena@fischer.design",
+       phone:"", stageId:s5, value:1500, source:"Marketplace", priority:"low",
+       last:plus(-20), next:"", tags:[], notes:"Chose a cheaper freelancer. Worth re-approaching in 6 months.",
+       tasks:[],
+       log:[{id:uid(), date:plus(-20), type:"Note", note:"Lost on price."}],
+       order:0}
+    ]
+  };
+  save();
+}
+
+function stageById(id){ return DB.stages.filter(function(s){ return s.id===id; })[0] || null; }
+function stageIndex(id){ for(var i=0;i<DB.stages.length;i++){ if(DB.stages[i].id===id) return i; } return 0; }
+function stageColor(id){
+  var st = stageById(id);
+  if(isWonStage(st)) return WON_COL;
+  if(isLostStage(st)) return LOST_COL;
+  var openIdx = 0;
+  for(var i=0;i<DB.stages.length;i++){
+    var s = DB.stages[i];
+    if(isWonStage(s) || isLostStage(s)) continue;
+    if(s.id === id) return STAGE_COLS[openIdx % STAGE_COLS.length];
+    openIdx++;
+  }
+  return STAGE_COLS[0];
+}
+function clientsIn(stageId){
+  return DB.clients.filter(function(c){ return c.stageId===stageId; })
+    .sort(function(a,b){ return (a.order||0)-(b.order||0); });
+}
+
+/* ============================================================ rendering: pipeline */
+function renderPipeline(){
+  var wrap = document.getElementById("stages");
+  wrap.innerHTML = "";
+  var today = todayISO();
+
+  DB.stages.forEach(function(st, i){
+    var all = clientsIn(st.id);
+    var shown = all.filter(function(c){ return matchesFilters(c, state, today); });
+    var value = shown.reduce(function(a,c){ return a + (Number(c.value)||0); }, 0);
+
+    var el = document.createElement("div");
+    el.className = "stage";
+    el.innerHTML =
+      '<div class="stage-head">'+
+        '<span class="stage-dot" style="background:'+stageColor(st.id)+'"></span>'+
+        '<input class="stage-title" value="'+esc(st.name)+'" data-stage="'+st.id+'">'+
+        '<span class="stage-count">'+shown.length+'</span>'+
+      '</div>'+
+      '<div class="stage-sum">'+
+        '<input class="stage-prob" type="number" min="0" max="100" step="5" '+
+          'value="'+st.prob+'" data-stage="'+st.id+'" title="How likely a deal in this stage is to close. 100 = won, 0 = lost.">'+
+        '<span class="stage-prob-lab">% likely</span> · <b>'+money(value)+'</b></div>'+
+      '<div class="stage-body" data-stage="'+st.id+'"></div>'+
+      '<button class="stage-add" data-stage="'+st.id+'">+ Add client</button>';
+
+    var body = el.querySelector(".stage-body");
+    if(!shown.length){
+      body.innerHTML = '<div class="empty">Nothing here</div>';
+    } else {
+      shown.forEach(function(c){ body.appendChild(renderClientCard(c, today)); });
+    }
+
+    body.addEventListener("dragover", function(e){ e.preventDefault(); body.classList.add("dragover"); });
+    body.addEventListener("dragleave", function(){ body.classList.remove("dragover"); });
+    body.addEventListener("drop", function(e){
+      e.preventDefault(); body.classList.remove("dragover");
+      moveClientToStage(e.dataTransfer.getData("text/plain"), st.id);
+    });
+
+    el.querySelector(".stage-title").addEventListener("change", function(e){
+      st.name = e.target.value.trim() || st.name; save(); renderAll();
+    });
+
+    /* Stage likelihood is editable: it drives the weighted forecast, and 100/0 are
+       what make a stage read as won/lost, so clamp it rather than trust the input. */
+    el.querySelector(".stage-prob").addEventListener("change", function(e){
+      var v = Math.round(Number(e.target.value));
+      if(!isFinite(v)) v = st.prob;
+      st.prob = Math.max(0, Math.min(100, v));
+      save(); renderAll();
+    });
+    el.querySelector(".stage-add").addEventListener("click", function(){ newClientInStage(st.id); });
+
+    wrap.appendChild(el);
+  });
+
+  renderStats();
+  renderFilterOptions();
+}
+
+function renderClientCard(c, today){
+  var el = document.createElement("div");
+  el.className = "ccard";
+  el.draggable = true;
+
+  var f = followState(c, today);
+  var fp = "";
+  if(f.key === "overdue") fp = '<span class="pillx overdue">'+esc(f.label)+'</span>';
+  else if(f.key === "today") fp = '<span class="pillx today">'+esc(f.label)+'</span>';
+  else if(f.key === "soon") fp = '<span class="pillx soon">'+esc(f.label)+'</span>';
+  else if(f.key === "later") fp = '<span class="pillx">'+esc(f.label)+'</span>';
+
+  var tags = (c.tags||[]).slice(0,2).map(function(t){
+    return '<span class="tagx">'+esc(t)+'</span>';
+  }).join("");
+
+  var pr = PRI[c.priority||"med"] || PRI.med;
+  var ot = openTasks(c).length;
+  el.innerHTML =
+    '<div class="ccard-name"><span class="pri-dot" style="background:'+pr.color+'" title="'+esc(pr.label)+' priority"></span> '+
+      esc(c.name||"Unnamed client")+'</div>'+
+    (c.company ? '<div class="ccard-co">'+esc(c.company)+'</div>' : '')+
+    (Number(c.value) ? '<div class="ccard-val">'+money(c.value)+'</div>' : '')+
+    '<div class="ccard-meta">'+ fp +
+      (ot ? '<span class="pillx task">'+ot+' task'+(ot===1?'':'s')+'</span>' : '')+
+      (c.source ? '<span class="pillx src">'+esc(c.source)+'</span>' : '')+
+      tags +
+    '</div>';
+
+  el.addEventListener("click", function(){ openClientModal(c); });
+  el.addEventListener("dragstart", function(e){
+    e.dataTransfer.setData("text/plain", c.id);
+    el.classList.add("dragging");
+  });
+  el.addEventListener("dragend", function(){ el.classList.remove("dragging"); });
+  return el;
+}
+
+function moveClientToStage(clientId, stageId){
+  var c = DB.clients.filter(function(x){ return x.id===clientId; })[0];
+  if(!c || c.stageId === stageId){ renderPipeline(); return; }
+  c.stageId = stageId;
+  c.order = clientsIn(stageId).length;
+  save(); renderAll();
+}
+
+/* ============================================================ rendering: client table */
+function renderList(){
+  var today = todayISO();
+  var rows = DB.clients.filter(function(c){ return matchesFilters(c, state, today); })
+    .sort(function(a,b){
+      var ra = urgencyRank(a, today), rb = urgencyRank(b, today);
+      if(ra !== rb) return ra - rb;
+      var pa = (PRI[a.priority||"med"]||PRI.med).rank, pb = (PRI[b.priority||"med"]||PRI.med).rank;
+      if(pa !== pb) return pb - pa;
+      return (Number(b.value)||0) - (Number(a.value)||0);
+    });
+
+  var html = '<table class="ctable"><thead><tr>'+
+    '<th>Client</th><th>Stage</th><th>Priority</th><th>Source</th>'+
+    '<th class="num">Value</th><th>Last contact</th><th>Follow-up</th><th class="num">Tasks</th>'+
+    '</tr></thead><tbody>';
+
+  if(!rows.length){
+    html += '<tr><td colspan="8"><div class="empty">No clients match these filters.</div></td></tr>';
+  }
+
+  rows.forEach(function(c){
+    var st = stageById(c.stageId);
+    var f = followState(c, today);
+    var cls = f.key === "overdue" ? "overdue" : f.key === "today" ? "today" : f.key === "soon" ? "soon" : "";
+    var lastTxt = "—";
+    if(c.last){
+      var d = daysBetween(c.last, today);
+      lastTxt = d === 0 ? "Today" : d === 1 ? "Yesterday" : d + "d ago";
+    }
+    html += '<tr data-id="'+c.id+'">'+
+      '<td class="nm">'+esc(c.name||"Unnamed client")+
+        (c.company ? '<small>'+esc(c.company)+'</small>' : '')+'</td>'+
+      '<td><span class="stagechip" style="background:'+stageColor(c.stageId)+'22;color:'+stageColor(c.stageId)+'">'+
+        esc(st ? st.name : "—")+'</span></td>'+
+      '<td><span class="pri-dot" style="background:'+(PRI[c.priority||"med"]||PRI.med).color+'"></span> '+
+        esc((PRI[c.priority||"med"]||PRI.med).label)+'</td>'+
+      '<td>'+esc(c.source||"—")+'</td>'+
+      '<td class="num">'+(Number(c.value) ? money(c.value) : "—")+'</td>'+
+      '<td>'+esc(lastTxt)+'</td>'+
+      '<td>'+(f.key === "none" ? '<span class="pillx">None</span>'
+                               : '<span class="pillx '+cls+'">'+esc(f.label)+'</span>')+'</td>'+
+      '<td class="num">'+(openTasks(c).length || "—")+'</td>'+
+    '</tr>';
+  });
+
+  html += '</tbody></table>';
+  var wrap = document.getElementById("listWrap");
+  wrap.innerHTML = html;
+  Array.prototype.forEach.call(wrap.querySelectorAll("tbody tr[data-id]"), function(tr){
+    tr.addEventListener("click", function(){
+      var c = DB.clients.filter(function(x){ return x.id===tr.getAttribute("data-id"); })[0];
+      if(c) openClientModal(c);
+    });
+  });
+  renderStats();
+  renderFilterOptions();
+}
+
+/* ============================================================ rendering: dashboard */
+function ringSvg(pct, color){
+  var r = 52, c = 2*Math.PI*r, filled = c*Math.max(0,Math.min(100,pct))/100;
+  return '<svg width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">'+
+    '<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="var(--band)" stroke-width="13"/>'+
+    '<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="13"'+
+      ' stroke-linecap="round" stroke-dasharray="'+filled.toFixed(1)+' '+(c-filled).toFixed(1)+'"'+
+      ' transform="rotate(-90 70 70)"/>'+
+    '</svg>';
+}
+
+function kpi(label, num, sub, color){
+  return '<div class="kpi" style="--kpi-c:'+color+'">'+
+    '<div class="kpi-label">'+esc(label)+'</div>'+
+    '<div class="kpi-num">'+num+'</div>'+
+    '<div class="kpi-sub">'+esc(sub)+'</div>'+
+  '</div>';
+}
+
+function renderDashboard(){
+  var today = todayISO();
+  var s = crmStats(DB.clients, DB.stages, today);
+  var accent = (DB.settings && DB.settings.accent) || "#0F7B6C";
+  /* Stage bars scale by VALUE, not head-count — the row reads "2 · $4,800", so a
+     count-scaled bar made a $900 stage look the same length as an $1,800 one. */
+  var maxStageVal = Math.max.apply(null, s.byStage.map(function(x){ return x.value; }).concat([1]));
+  var maxSrc = Math.max.apply(null, s.bySource.map(function(x){ return x.count; }).concat([1]));
+
+  var html = '';
+
+  html += '<div class="dash-grid">'+
+    kpi("Open pipeline", money(s.openValue), s.open+" active client"+(s.open===1?"":"s"), accent)+
+    kpi("Weighted forecast", money(s.weighted), "Value × stage likelihood", "#2F6FED")+
+    kpi("Needs follow-up", s.needsAction, s.overdue+" overdue · "+s.dueToday+" due today", "#C0392B")+
+    kpi("Tasks due", s.tasksDue, s.tasksOpen+" open across all clients", "#B9770E")+
+  '</div>';
+
+  html += '<div class="dash-row">'+
+    '<div class="panel"><h3>Win rate</h3>'+
+      '<div class="ringwrap">'+ ringSvg(s.winRate, "#12B76A") +
+        '<div class="ring-pct" style="color:#12B76A">'+s.winRate+'%</div>'+
+        '<div class="ring-sub">'+s.won+' won of '+s.closedCount+' closed</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="panel"><h3>Pipeline by stage</h3>'+
+      (s.byStage.length ? s.byStage.map(function(x){
+        return '<div class="bar-row">'+
+          '<div class="bar-name" title="'+esc(x.name)+'">'+esc(x.name)+'</div>'+
+          '<div class="bar-track"><div class="bar-fill" style="width:'+Math.max(2, Math.round(100*x.value/maxStageVal))+'%;background:'+x.color+'"></div></div>'+
+          '<div class="bar-val">'+x.count+' · '+money(x.value)+'</div>'+
+        '</div>';
+      }).join("") : '<div class="dash-empty">No stages yet.</div>')+
+    '</div>'+
+  '</div>';
+
+  html += '<div class="dash-row two">'+
+    '<div class="panel"><h3>Tasks due next</h3>'+
+      (s.taskQueue.length ? s.taskQueue.map(function(t){
+        var col = t.key === "overdue" ? "#C0392B" : t.key === "today" ? "#B9770E" : "#2E5C8A";
+        var lab = t.days < 0 ? (-t.days)+"d late" : t.days === 0 ? "Today" : "In "+t.days+"d";
+        return '<div class="fu-row">'+
+          '<span class="fu-dot" style="background:'+col+'"></span>'+
+          '<span class="fu-name" title="'+esc(t.text)+'">'+esc(t.text)+'</span>'+
+          '<span class="fu-co">'+esc(t.client)+'</span>'+
+          '<span class="pillx '+(t.key==="overdue"?"overdue":t.key==="today"?"today":"soon")+'">'+esc(lab)+'</span>'+
+        '</div>';
+      }).join("") : '<div class="dash-empty">No tasks due in the next 7 days. Add a task with a due date on any client and it appears here.</div>')+
+    '</div>'+
+    '<div class="panel"><h3>Follow up next</h3>'+
+      (s.followList.length ? s.followList.map(function(f){
+        var col = f.key === "overdue" ? "#C0392B" : f.key === "today" ? "#B9770E" : "#2E5C8A";
+        var cls = f.key === "overdue" ? "overdue" : f.key === "today" ? "today" : "soon";
+        return '<div class="fu-row">'+
+          '<span class="fu-dot" style="background:'+col+'"></span>'+
+          '<span class="fu-name" title="'+esc(f.name)+'">'+esc(f.name)+'</span>'+
+          (f.company ? '<span class="fu-co">'+esc(f.company)+'</span>' : '')+
+          (f.value ? '<span class="fu-co">'+money(f.value)+'</span>' : '')+
+          '<span class="pillx '+cls+'">'+esc(f.label)+'</span>'+
+        '</div>';
+      }).join("") : '<div class="dash-empty">Nothing due in the next 7 days. Set a follow-up date on a client and it appears here.</div>')+
+    '</div>'+
+  '</div>';
+
+  html += '<div class="dash-row two">'+
+    '<div class="panel"><h3>Where clients come from</h3>'+
+      (s.bySource.length ? s.bySource.slice(0,6).map(function(x){
+        return '<div class="bar-row">'+
+          '<div class="bar-name" title="'+esc(x.source)+'">'+esc(x.source)+'</div>'+
+          '<div class="bar-track"><div class="bar-fill" style="width:'+Math.round(100*x.count/maxSrc)+'%;background:'+accent+'"></div></div>'+
+          '<div class="bar-val">'+x.count+' · '+x.won+' won</div>'+
+        '</div>';
+      }).join("") : '<div class="dash-empty">No sources recorded yet.</div>')+
+    '</div>'+
+    '<div class="panel"><h3>Going cold — no contact in 30 days</h3>'+
+      (s.staleCount ?
+        DB.clients.filter(function(c){
+          var st = stageById(c.stageId);
+          if(!isOpenStage(st)) return false;
+          var dd = c.last ? daysBetween(c.last, today) : null;
+          return dd !== null && dd >= 30;
+        }).map(function(c){
+          var dd = daysBetween(c.last, today);
+          return '<div class="fu-row">'+
+            '<span class="fu-dot" style="background:#B9770E"></span>'+
+            '<span class="fu-name">'+esc(c.name)+'</span>'+
+            (c.company ? '<span class="fu-co">'+esc(c.company)+'</span>' : '')+
+            '<span class="pillx today">'+dd+' days quiet</span>'+
+          '</div>';
+        }).join("")
+        : '<div class="dash-empty">Every open client has been contacted in the last 30 days.</div>')+
+    '</div>'+
+  '</div>';
+
+  document.getElementById("dashWrap").innerHTML = html;
+}
+
+function renderStats(){
+  var s = crmStats(DB.clients, DB.stages, todayISO());
+  document.getElementById("statClients").textContent = s.total;
+  document.getElementById("statPipe").textContent = money(s.openValue);
+  document.getElementById("statDue").textContent = s.needsAction;
+  document.getElementById("statTasks").textContent = s.tasksDue;
+}
+
+function renderFilterOptions(){
+  var ss = document.getElementById("filterStage"), cur = ss.value;
+  ss.innerHTML = '<option value="">All stages</option>' +
+    DB.stages.map(function(s){ return '<option value="'+s.id+'">'+esc(s.name)+'</option>'; }).join("");
+  ss.value = cur;
+
+  var sc = document.getElementById("filterSource"), curc = sc.value;
+  var srcs = {};
+  DB.clients.forEach(function(c){ if((c.source||"").trim()) srcs[c.source] = 1; });
+  sc.innerHTML = '<option value="">All sources</option>' +
+    Object.keys(srcs).sort().map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'</option>'; }).join("");
+  sc.value = curc;
+}
+
+function renderAll(){
+  if(state.view === "pipe") renderPipeline();
+  else if(state.view === "list") renderList();
+  else { renderDashboard(); renderStats(); }
+}
+/* ============================================================ client modal */
+function newClientInStage(stageId){
+  openClientModal({ id:null, name:"", company:"", email:"", phone:"", stageId:stageId,
+                    value:"", source:"", priority:"med", last:"", next:"", tags:[], notes:"",
+                    tasks:[], log:[] });
+}
+
+function openClientModal(c){
+  state.editingClient = c;
+  state.taskDraft = (c.tasks||[]).map(function(t){
+    return { id:t.id||uid(), text:t.text||"", due:t.due||"", done:!!t.done };
+  });
+  state.logDraft = (c.log||[]).map(function(l){
+    return { id:l.id||uid(), date:l.date||"", type:l.type||"Note", note:l.note||"" };
+  });
+
+  document.getElementById("clientModalTitle").textContent = c.id ? "Edit client" : "New client";
+  document.getElementById("f-name").value = c.name || "";
+  document.getElementById("f-company").value = c.company || "";
+  document.getElementById("f-email").value = c.email || "";
+  document.getElementById("f-phone").value = c.phone || "";
+  document.getElementById("f-value").value = (c.value === 0 || c.value) ? c.value : "";
+  document.getElementById("f-last").value = c.last || "";
+  document.getElementById("f-next").value = c.next || "";
+  document.getElementById("f-tags").value = (c.tags||[]).join(", ");
+  document.getElementById("f-notes").value = c.notes || "";
+
+  var sel = document.getElementById("f-stage");
+  sel.innerHTML = DB.stages.map(function(s){
+    return '<option value="'+s.id+'"'+(s.id===c.stageId?" selected":"")+'>'+esc(s.name)+'</option>';
+  }).join("");
+
+  var src = document.getElementById("f-source");
+  var opts = DB.sources.slice();
+  if(c.source && opts.indexOf(c.source) === -1) opts.push(c.source);
+  src.innerHTML = '<option value="">—</option>' + opts.map(function(s){
+    return '<option value="'+esc(s)+'"'+(s===c.source?" selected":"")+'>'+esc(s)+'</option>';
+  }).join("");
+
+  renderPriorityPicker(c.priority || "med");
+  renderTaskDraft();
+  renderLogDraft();
+  document.getElementById("logDate").value = todayISO();
+  document.getElementById("logNote").value = "";
+  document.getElementById("deleteClientBtn").style.visibility = c.id ? "visible" : "hidden";
+  document.getElementById("clientOverlay").classList.add("show");
+}
+
+function closeClientModal(){
+  document.getElementById("clientOverlay").classList.remove("show");
+  state.editingClient = null;
+}
+
+function renderPriorityPicker(val){
+  var wrap = document.getElementById("f-priority");
+  Array.prototype.forEach.call(wrap.querySelectorAll(".pri-opt"), function(el){
+    var k = el.getAttribute("data-v");
+    var on = k === val;
+    el.classList.toggle("sel", on);
+    el.style.background = on ? PRI[k].color : "";
+    el.onclick = function(){ renderPriorityPicker(k); };
+  });
+  wrap.setAttribute("data-val", val);
+}
+function selectedPriority(){
+  return document.getElementById("f-priority").getAttribute("data-val") || "med";
+}
+
+function renderTaskDraft(){
+  var wrap = document.getElementById("f-tasks");
+  if(!state.taskDraft.length){
+    wrap.innerHTML = '<div class="dash-empty" style="padding:4px 0">No tasks yet.</div>';
+    return;
+  }
+  wrap.innerHTML = "";
+  state.taskDraft.forEach(function(t){
+    var row = document.createElement("div");
+    row.className = "task-item" + (t.done ? " done" : "");
+    row.innerHTML =
+      '<input type="checkbox"'+(t.done?" checked":"")+'>'+
+      '<input type="text" value="'+esc(t.text)+'" placeholder="What needs doing…">'+
+      '<input type="date" value="'+esc(t.due)+'">'+
+      '<button class="task-del" title="Remove">×</button>';
+    var cb = row.querySelector('input[type=checkbox]');
+    var tx = row.querySelector('input[type=text]');
+    var dt = row.querySelector('input[type=date]');
+    cb.addEventListener("change", function(){ t.done = cb.checked; renderTaskDraft(); });
+    tx.addEventListener("input", function(){ t.text = tx.value; });
+    dt.addEventListener("change", function(){ t.due = dt.value; });
+    row.querySelector(".task-del").addEventListener("click", function(){
+      state.taskDraft = state.taskDraft.filter(function(x){ return x.id !== t.id; });
+      renderTaskDraft();
+    });
+    wrap.appendChild(row);
+  });
+}
+
+function renderLogDraft(){
+  var wrap = document.getElementById("f-log");
+  var rows = state.logDraft.slice().sort(function(a,b){ return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+  if(!rows.length){
+    wrap.innerHTML = '<div class="dash-empty" style="padding:4px 0">Nothing logged yet.</div>';
+    return;
+  }
+  wrap.innerHTML = "";
+  rows.forEach(function(l){
+    var row = document.createElement("div");
+    row.className = "log-item";
+    row.innerHTML =
+      '<span class="ld">'+esc(l.date||"—")+'</span>'+
+      '<span class="lt">'+esc(l.type)+'</span>'+
+      '<span class="ln">'+esc(l.note)+'</span>'+
+      '<button class="log-del" title="Remove">×</button>';
+    row.querySelector(".log-del").addEventListener("click", function(){
+      state.logDraft = state.logDraft.filter(function(x){ return x.id !== l.id; });
+      renderLogDraft();
+    });
+    wrap.appendChild(row);
+  });
+}
+
+function addLogFromForm(){
+  var note = document.getElementById("logNote").value.trim();
+  if(!note){ toast("Write what was said first"); return; }
+  state.logDraft.push({
+    id: uid(),
+    date: document.getElementById("logDate").value || todayISO(),
+    type: document.getElementById("logType").value,
+    note: note
+  });
+  document.getElementById("logNote").value = "";
+  renderLogDraft();
+}
+
+function saveClientFromModal(){
+  var c = state.editingClient;
+  if(!c) return;
+  var name = document.getElementById("f-name").value.trim();
+  if(!name){ toast("Give the client a name"); return; }
+
+  var tags = document.getElementById("f-tags").value.split(",")
+    .map(function(t){ return t.trim(); }).filter(Boolean);
+
+  var payload = {
+    name: name,
+    company: document.getElementById("f-company").value.trim(),
+    email: document.getElementById("f-email").value.trim(),
+    phone: document.getElementById("f-phone").value.trim(),
+    stageId: document.getElementById("f-stage").value,
+    value: Number(document.getElementById("f-value").value) || 0,
+    source: document.getElementById("f-source").value,
+    priority: selectedPriority(),
+    last: document.getElementById("f-last").value,
+    next: document.getElementById("f-next").value,
+    tags: tags,
+    notes: document.getElementById("f-notes").value.trim(),
+    tasks: state.taskDraft.filter(function(t){ return t.text.trim(); })
+             .map(function(t){ return { id:t.id, text:t.text.trim(), due:t.due, done:!!t.done }; }),
+    log: state.logDraft.slice()
+  };
+
+  if(c.id){
+    var live = DB.clients.filter(function(x){ return x.id === c.id; })[0];
+    if(live) Object.keys(payload).forEach(function(k){ live[k] = payload[k]; });
+  } else {
+    if(demoLimitReached()) return;
+    payload.id = uid();
+    payload.order = clientsIn(payload.stageId).length;
+    DB.clients.push(payload);
+  }
+  save(); closeClientModal(); renderAll();
+  toast(c.id ? "Client saved" : "Client added");
+}
+
+function deleteClientFromModal(){
+  var c = state.editingClient;
+  if(!c || !c.id) return;
+  if(!confirm('Delete "'+(c.name||"this client")+'"? This cannot be undone.')) return;
+  DB.clients = DB.clients.filter(function(x){ return x.id !== c.id; });
+  save(); closeClientModal(); renderAll();
+  toast("Client deleted");
+}
+
+/* ============================================================ backup */
+function exportJSON(){
+  var blob = new Blob([JSON.stringify(DB, null, 2)], {type:"application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "client-tracker-backup-" + todayISO() + ".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast("Backup downloaded");
+}
+function importJSON(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var data = JSON.parse(reader.result);
+      if(!data || !Array.isArray(data.clients) || !Array.isArray(data.stages)){
+        toast("That file doesn't look like a Client Tracker backup"); return;
+      }
+      if(!confirm("This replaces everything currently in this tracker. Continue?")) return;
+      DB = data;
+      if(!DB.sources) DB.sources = DEFAULT_SOURCES.slice();
+      DB.clients.forEach(function(c){
+        if(!c.tasks) c.tasks = [];
+        if(!c.log) c.log = [];
+        if(!c.tags) c.tags = [];
+        if(!c.priority) c.priority = "med";
+      });
+      save(); applyAccent(DB.settings.accent); applyStyle(DB.settings.style);
+      applyTheme(); renderAll();
+      toast("Backup restored");
+    }catch(e){ toast("Couldn't read that file"); }
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================ theme / style */
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", DB.settings.theme);
+  document.getElementById("themeBtn").textContent = DB.settings.theme==="dark" ? "☀ Light" : "🌙 Dark";
+}
+function toggleTheme(){
+  DB.settings.theme = DB.settings.theme==="dark" ? "light" : "dark";
+  save(); applyTheme();
+}
+function shadeColor(hex, pct){
+  var n = parseInt(hex.slice(1),16);
+  var r = Math.max(0,Math.min(255,(n>>16)+Math.round(255*pct/100)));
+  var g = Math.max(0,Math.min(255,((n>>8)&255)+Math.round(255*pct/100)));
+  var b = Math.max(0,Math.min(255,(n&255)+Math.round(255*pct/100)));
+  return "#"+(1<<24 | r<<16 | g<<8 | b).toString(16).slice(1);
+}
+function applyAccent(hex){
+  if(!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
+  DB.settings.accent = hex;
+  document.documentElement.style.setProperty("--accent", hex);
+  document.documentElement.style.setProperty("--accent-d", shadeColor(hex, -18));
+  document.documentElement.style.setProperty("--accent-l", "color-mix(in srgb, "+hex+" 14%, var(--card))");
+  save(); renderStylePanel();
+}
+function applyStyle(key){
+  DB.settings.style = key;
+  document.body.setAttribute("data-style", key);
+  save(); renderStylePanel();
+}
+function renderStylePanel(){
+  var sw = document.getElementById("swatches");
+  sw.innerHTML = PRESETS.map(function(p){
+    var sel = (DB.settings.accent||"").toLowerCase()===p.hex.toLowerCase() ? " sel" : "";
+    return '<div class="swatch'+sel+'" style="background:'+p.hex+'" title="'+esc(p.name)+'" data-hex="'+p.hex+'"></div>';
+  }).join("");
+  Array.prototype.forEach.call(sw.querySelectorAll(".swatch"), function(el){
+    el.addEventListener("click", function(){ applyAccent(el.getAttribute("data-hex")); });
+  });
+  var so = document.getElementById("styleOpts");
+  so.innerHTML = STYLES.map(function(s){
+    var sel = DB.settings.style===s.key ? " sel" : "";
+    return '<div class="style-opt'+sel+'" data-key="'+s.key+'">'+
+      '<div class="style-swatch" style="background:'+s.hex+'"></div>'+
+      '<div><div class="style-label">'+esc(s.label)+'</div><div class="style-sub">'+esc(s.sub)+'</div></div>'+
+      '</div>';
+  }).join("");
+  Array.prototype.forEach.call(so.querySelectorAll(".style-opt"), function(el){
+    el.addEventListener("click", function(){ applyStyle(el.getAttribute("data-key")); });
+  });
+  document.getElementById("customHex").value = DB.settings.accent || "";
+  document.getElementById("customColor").value = DB.settings.accent || "#0F7B6C";
+}
+function toggleStylePanel(force){
+  var p = document.getElementById("stylePanel");
+  var show = force!==undefined ? force : !p.classList.contains("show");
+  p.classList.toggle("show", show);
+  if(show) renderStylePanel();
+}
+
+/* ============================================================ views */
+function setView(v){
+  state.view = v;
+  document.body.setAttribute("data-view", v);
+  document.getElementById("viewPipe").classList.toggle("on", v==="pipe");
+  document.getElementById("viewList").classList.toggle("on", v==="list");
+  document.getElementById("viewDash").classList.toggle("on", v==="dash");
+  renderAll();
+}
+
+/* ============================================================ init / wiring */
+function wireEvents(){
+  document.getElementById("addClientBtn").addEventListener("click", function(){
+    newClientInStage(DB.stages[0].id);
+  });
+  document.getElementById("themeBtn").addEventListener("click", toggleTheme);
+  document.getElementById("printBtn").addEventListener("click", function(){ window.print(); });
+  document.getElementById("exportBtn").addEventListener("click", exportJSON);
+  document.getElementById("importBtn").addEventListener("click", function(){ document.getElementById("importFile").click(); });
+  document.getElementById("importFile").addEventListener("change", function(e){
+    if(e.target.files[0]) importJSON(e.target.files[0]);
+    e.target.value = "";
+  });
+
+  document.getElementById("styleBtn").addEventListener("click", function(e){ e.stopPropagation(); toggleStylePanel(); });
+  document.getElementById("stylePanel").addEventListener("click", function(e){ e.stopPropagation(); });
+  document.addEventListener("click", function(){ toggleStylePanel(false); });
+  document.getElementById("customColor").addEventListener("input", function(e){
+    applyAccent(e.target.value); document.getElementById("customHex").value = e.target.value;
+  });
+  document.getElementById("customHex").addEventListener("change", function(e){
+    var v = e.target.value.trim();
+    if(v[0] !== "#") v = "#"+v;
+    applyAccent(v);
+  });
+
+  document.getElementById("viewPipe").addEventListener("click", function(){ setView("pipe"); });
+  document.getElementById("viewList").addEventListener("click", function(){ setView("list"); });
+  document.getElementById("viewDash").addEventListener("click", function(){ setView("dash"); });
+
+  document.getElementById("searchBox").addEventListener("input", function(e){ state.search = e.target.value; renderAll(); });
+  document.getElementById("filterStage").addEventListener("change", function(e){ state.filterStage = e.target.value; renderAll(); });
+  document.getElementById("filterSource").addEventListener("change", function(e){ state.filterSource = e.target.value; renderAll(); });
+  document.getElementById("filterFollow").addEventListener("click", function(){
+    state.filterFollow = !state.filterFollow;
+    this.classList.toggle("on", state.filterFollow);
+    renderAll();
+  });
+
+  document.getElementById("clientModalClose").addEventListener("click", closeClientModal);
+  document.getElementById("cancelClientBtn").addEventListener("click", closeClientModal);
+  document.getElementById("saveClientBtn").addEventListener("click", saveClientFromModal);
+  document.getElementById("deleteClientBtn").addEventListener("click", deleteClientFromModal);
+  document.getElementById("clientOverlay").addEventListener("click", function(e){
+    if(e.target.id==="clientOverlay") closeClientModal();
+  });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeClientModal(); });
+
+  document.getElementById("addTaskBtn").addEventListener("click", function(){
+    state.taskDraft.push({ id:uid(), text:"", due:"", done:false });
+    renderTaskDraft();
+  });
+  document.getElementById("addLogBtn").addEventListener("click", addLogFromForm);
+  document.getElementById("logNote").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); addLogFromForm(); }
+  });
+
+  document.getElementById("helpBtn").addEventListener("click", function(){
+    alert("Client Tracker & CRM — quick guide\n\n"+
+      "THREE VIEWS\n"+
+      "• Pipeline — drag a client between stages as the deal moves.\n"+
+      "• Clients — every client in one sortable table, most urgent first.\n"+
+      "• Dashboard — pipeline value, weighted forecast, follow-ups, tasks and win rate.\n\n"+
+      "THE POINT OF THIS TOOL\n"+
+      "Set a NEXT FOLLOW-UP date on a client. Anything overdue or due today appears in\n"+
+      "'Follow up next' on the dashboard and at the top of the Clients table, so you always\n"+
+      "know who to contact today. 'Going cold' flags open clients you have not spoken to in\n"+
+      "30 days.\n\n"+
+      "EVERY CLIENT HOLDS\n"+
+      "Contact details, stage, deal value, source, priority, tags, notes, a task list with due\n"+
+      "dates, and a full contact log.\n\n"+
+      "MAKE IT YOURS\n"+
+      "Style — 8 accent colours (or your own hex) across 3 board styles. Dark mode too.\n\n"+
+      "YOUR DATA\n"+
+      "Everything is saved in this browser on this device. Nothing is uploaded anywhere.\n"+
+      "Use Backup regularly — it is your file, keep a copy.");
+  });
+}
+
+function init(){
+  seedIfEmpty();
+  if(!DB.settings) DB.settings = {theme:"light", accent:"#0F7B6C", style:"vivid", styleSeeded:true, currency:"$"};
+  if(!DB.settings.accent) DB.settings.accent = "#0F7B6C";
+  if(!DB.settings.style) DB.settings.style = "vivid";
+  if(!DB.settings.currency) DB.settings.currency = "$";
+  if(!DB.settings.styleSeeded){ DB.settings.style = "vivid"; DB.settings.styleSeeded = true; }
+  if(!DB.sources) DB.sources = DEFAULT_SOURCES.slice();
+
+  applyTheme();
+  applyAccent(DB.settings.accent);
+  applyStyle(DB.settings.style);
+  document.body.setAttribute("data-view", state.view);
+  wireEvents();
+  renderAll();
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+
+})();
+</script>
+</body>
+</html>
