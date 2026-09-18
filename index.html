@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Client Tracker &amp; CRM — LedgerLoopStudio</title>
+<title>Client Tracker &amp; CRM â LedgerLoopStudio</title>
 <style>
 :root{
   --ink:#1B2A36; --grey:#5A6B78; --rule:#E2E6E9; --band:#FAFBFC;
@@ -285,21 +285,22 @@ td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px;
 .demo-banner a{color:#fff;text-decoration:underline}
 .demo-banner .x{position:absolute;right:10px;top:6px;background:none;border:none;color:#fff;font:inherit;cursor:pointer;opacity:.85;padding:4px 8px}
 .demo-banner .x:hover{opacity:1}
+.buildstamp{max-width:1180px;margin:0 auto;padding:4px 22px 30px;color:#8A9AA5;font-size:11px;letter-spacing:.04em;text-align:right}
 </style>
 </head>
 <body>
 
-<div class="demo-banner" id="demoBanner">DEMO — example data, add up to 15 of your own clients and see whether it thinks the way you do. Nothing is saved permanently and it can reset any time. <a href="https://www.etsy.com/shop/LedgerLoopStudio" target="_blank" rel="noopener">Buy the full version</a> for your own unlimited, permanent copy.<button class="x" onclick="document.getElementById('demoBanner').style.display='none'" aria-label="Dismiss">✕</button></div>
+<div class="demo-banner" id="demoBanner">DEMO â example data, add up to 15 of your own clients and see whether it thinks the way you do. Nothing is saved permanently and it can reset any time. <a href="https://www.etsy.com/shop/LedgerLoopStudio" target="_blank" rel="noopener">Buy the full version</a> for your own unlimited, permanent copy.<button class="x" onclick="document.getElementById('demoBanner').style.display='none'" aria-label="Dismiss">â</button></div>
 
 <div id="topbar">
   <div id="brand"><span class="mark"></span>Client Tracker</div>
   <div id="spacer"></div>
   <button class="topbtn" id="addClientBtn">+ New client</button>
-  <button class="topbtn" id="styleBtn">🎨 Style</button>
-  <button class="topbtn" id="themeBtn">🌙 Dark</button>
-  <button class="topbtn" id="printBtn">🖨 Print</button>
-  <button class="topbtn" id="exportBtn">⬇ Backup</button>
-  <button class="topbtn" id="importBtn">⬆ Restore</button>
+  <button class="topbtn" id="styleBtn">ð¨ Style</button>
+  <button class="topbtn" id="themeBtn">ð Dark</button>
+  <button class="topbtn" id="printBtn">ð¨ Print</button>
+  <button class="topbtn" id="exportBtn">â¬ Backup</button>
+  <button class="topbtn" id="importBtn">â¬ Restore</button>
   <input type="file" id="importFile" accept="application/json" style="display:none">
   <button class="topbtn accent" id="helpBtn">?</button>
 </div>
@@ -321,10 +322,10 @@ td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px;
     <button id="viewList">Clients</button>
     <button id="viewDash">Dashboard</button>
   </div>
-  <input type="search" id="searchBox" placeholder="Search name, company, email…">
+  <input type="search" id="searchBox" placeholder="Search name, company, emailâ¦">
   <select id="filterStage"><option value="">All stages</option></select>
   <select id="filterSource"><option value="">All sources</option></select>
-  <button class="chip-toggle" id="filterFollow">⚠ Follow-up due</button>
+  <button class="chip-toggle" id="filterFollow">â  Follow-up due</button>
   <div id="stats">
     <span>Clients <b id="statClients">0</b></span>
     <span>Open pipeline <b id="statPipe">0</b></span>
@@ -342,7 +343,7 @@ td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px;
   <div class="modal">
     <div class="modal-head">
       <h3 id="clientModalTitle">Client</h3>
-      <button class="modal-close" id="clientModalClose">×</button>
+      <button class="modal-close" id="clientModalClose">Ã</button>
     </div>
     <div class="modal-body">
       <div class="row2">
@@ -351,7 +352,7 @@ td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px;
       </div>
       <div class="row2">
         <div class="field"><label>Email</label><input type="email" id="f-email" placeholder="name@company.com"></div>
-        <div class="field"><label>Phone</label><input type="text" id="f-phone" placeholder="+44 …"></div>
+        <div class="field"><label>Phone</label><input type="text" id="f-phone" placeholder="+44 â¦"></div>
       </div>
       <div class="row3">
         <div class="field"><label>Stage</label><select id="f-stage"></select></div>
@@ -372,7 +373,7 @@ td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px;
         <div class="field"><label>Next follow-up</label><input type="date" id="f-next"></div>
       </div>
       <div class="field"><label>Tags (comma separated)</label><input type="text" id="f-tags" placeholder="retainer, priority"></div>
-      <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="What matters about this client…"></textarea></div>
+      <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="What matters about this clientâ¦"></textarea></div>
       <div class="field">
         <label>Tasks for this client</label>
         <div class="task-list" id="f-tasks"></div>
@@ -387,7 +388,7 @@ td.nm small{display:block; font-weight:600; color:var(--grey); font-size:11.5px;
             <option>Call</option><option>Email</option><option>Meeting</option>
             <option>Proposal</option><option>Note</option>
           </select>
-          <input type="text" id="logNote" placeholder="What was said…">
+          <input type="text" id="logNote" placeholder="What was saidâ¦">
           <button class="btn" id="addLogBtn">Add</button>
         </div>
       </div>
@@ -441,7 +442,7 @@ var DEMO_MODE = true, DEMO_CLIENT_LIMIT = 22; /* 7 seeded + 15 room to try addin
 function demoLimitReached(){
   if(!DEMO_MODE) return false;
   if(!DB || !DB.clients || DB.clients.length < DEMO_CLIENT_LIMIT) return false;
-  alert("You've reached the "+DEMO_CLIENT_LIMIT+"-client demo limit.\n\nThis is just a preview — buy the full version for unlimited clients, all features unlocked, and your own permanent copy.");
+  alert("You've reached the "+DEMO_CLIENT_LIMIT+"-client demo limit.\n\nThis is just a preview â buy the full version for unlimited clients, all features unlocked, and your own permanent copy.");
   return true;
 }
 var state = { view:"pipe", search:"", filterStage:"", filterSource:"", filterFollow:false,
@@ -686,7 +687,7 @@ function seedIfEmpty(){
        tasks:[{id:uid(), text:"Send revised quote", due:plus(-1), done:false},
               {id:uid(), text:"Book the kickoff call", due:plus(4), done:false},
               {id:uid(), text:"Collect brand assets", due:"", done:true}],
-       log:[{id:uid(), date:plus(-12), type:"Call", note:"Intro call — needs it before Q4 launch."},
+       log:[{id:uid(), date:plus(-12), type:"Call", note:"Intro call â needs it before Q4 launch."},
             {id:uid(), date:plus(-4),  type:"Proposal", note:"Sent proposal v2 with the reduced scope."}],
        order:0},
       {id:uid(), name:"Daniel Reyes", company:"Reyes LLC", email:"dan@reyesllc.com",
@@ -771,7 +772,7 @@ function renderPipeline(){
       '<div class="stage-sum">'+
         '<input class="stage-prob" type="number" min="0" max="100" step="5" '+
           'value="'+st.prob+'" data-stage="'+st.id+'" title="How likely a deal in this stage is to close. 100 = won, 0 = lost.">'+
-        '<span class="stage-prob-lab">% likely</span> · <b>'+money(value)+'</b></div>'+
+        '<span class="stage-prob-lab">% likely</span> Â· <b>'+money(value)+'</b></div>'+
       '<div class="stage-body" data-stage="'+st.id+'"></div>'+
       '<button class="stage-add" data-stage="'+st.id+'">+ Add client</button>';
 
@@ -881,7 +882,7 @@ function renderList(){
     var st = stageById(c.stageId);
     var f = followState(c, today);
     var cls = f.key === "overdue" ? "overdue" : f.key === "today" ? "today" : f.key === "soon" ? "soon" : "";
-    var lastTxt = "—";
+    var lastTxt = "â";
     if(c.last){
       var d = daysBetween(c.last, today);
       lastTxt = d === 0 ? "Today" : d === 1 ? "Yesterday" : d + "d ago";
@@ -890,15 +891,15 @@ function renderList(){
       '<td class="nm">'+esc(c.name||"Unnamed client")+
         (c.company ? '<small>'+esc(c.company)+'</small>' : '')+'</td>'+
       '<td><span class="stagechip" style="background:'+stageColor(c.stageId)+'22;color:'+stageColor(c.stageId)+'">'+
-        esc(st ? st.name : "—")+'</span></td>'+
+        esc(st ? st.name : "â")+'</span></td>'+
       '<td><span class="pri-dot" style="background:'+(PRI[c.priority||"med"]||PRI.med).color+'"></span> '+
         esc((PRI[c.priority||"med"]||PRI.med).label)+'</td>'+
-      '<td>'+esc(c.source||"—")+'</td>'+
-      '<td class="num">'+(Number(c.value) ? money(c.value) : "—")+'</td>'+
+      '<td>'+esc(c.source||"â")+'</td>'+
+      '<td class="num">'+(Number(c.value) ? money(c.value) : "â")+'</td>'+
       '<td>'+esc(lastTxt)+'</td>'+
       '<td>'+(f.key === "none" ? '<span class="pillx">None</span>'
                                : '<span class="pillx '+cls+'">'+esc(f.label)+'</span>')+'</td>'+
-      '<td class="num">'+(openTasks(c).length || "—")+'</td>'+
+      '<td class="num">'+(openTasks(c).length || "â")+'</td>'+
     '</tr>';
   });
 
@@ -938,7 +939,7 @@ function renderDashboard(){
   var today = todayISO();
   var s = crmStats(DB.clients, DB.stages, today);
   var accent = (DB.settings && DB.settings.accent) || "#0F7B6C";
-  /* Stage bars scale by VALUE, not head-count — the row reads "2 · $4,800", so a
+  /* Stage bars scale by VALUE, not head-count â the row reads "2 Â· $4,800", so a
      count-scaled bar made a $900 stage look the same length as an $1,800 one. */
   var maxStageVal = Math.max.apply(null, s.byStage.map(function(x){ return x.value; }).concat([1]));
   var maxSrc = Math.max.apply(null, s.bySource.map(function(x){ return x.count; }).concat([1]));
@@ -947,8 +948,8 @@ function renderDashboard(){
 
   html += '<div class="dash-grid">'+
     kpi("Open pipeline", money(s.openValue), s.open+" active client"+(s.open===1?"":"s"), accent)+
-    kpi("Weighted forecast", money(s.weighted), "Value × stage likelihood", "#2F6FED")+
-    kpi("Needs follow-up", s.needsAction, s.overdue+" overdue · "+s.dueToday+" due today", "#C0392B")+
+    kpi("Weighted forecast", money(s.weighted), "Value Ã stage likelihood", "#2F6FED")+
+    kpi("Needs follow-up", s.needsAction, s.overdue+" overdue Â· "+s.dueToday+" due today", "#C0392B")+
     kpi("Tasks due", s.tasksDue, s.tasksOpen+" open across all clients", "#B9770E")+
   '</div>';
 
@@ -964,7 +965,7 @@ function renderDashboard(){
         return '<div class="bar-row">'+
           '<div class="bar-name" title="'+esc(x.name)+'">'+esc(x.name)+'</div>'+
           '<div class="bar-track"><div class="bar-fill" style="width:'+Math.max(2, Math.round(100*x.value/maxStageVal))+'%;background:'+x.color+'"></div></div>'+
-          '<div class="bar-val">'+x.count+' · '+money(x.value)+'</div>'+
+          '<div class="bar-val">'+x.count+' Â· '+money(x.value)+'</div>'+
         '</div>';
       }).join("") : '<div class="dash-empty">No stages yet.</div>')+
     '</div>'+
@@ -1004,11 +1005,11 @@ function renderDashboard(){
         return '<div class="bar-row">'+
           '<div class="bar-name" title="'+esc(x.source)+'">'+esc(x.source)+'</div>'+
           '<div class="bar-track"><div class="bar-fill" style="width:'+Math.round(100*x.count/maxSrc)+'%;background:'+accent+'"></div></div>'+
-          '<div class="bar-val">'+x.count+' · '+x.won+' won</div>'+
+          '<div class="bar-val">'+x.count+' Â· '+x.won+' won</div>'+
         '</div>';
       }).join("") : '<div class="dash-empty">No sources recorded yet.</div>')+
     '</div>'+
-    '<div class="panel"><h3>Going cold — no contact in 30 days</h3>'+
+    '<div class="panel"><h3>Going cold â no contact in 30 days</h3>'+
       (s.staleCount ?
         DB.clients.filter(function(c){
           var st = stageById(c.stageId);
@@ -1093,7 +1094,7 @@ function openClientModal(c){
   var src = document.getElementById("f-source");
   var opts = DB.sources.slice();
   if(c.source && opts.indexOf(c.source) === -1) opts.push(c.source);
-  src.innerHTML = '<option value="">—</option>' + opts.map(function(s){
+  src.innerHTML = '<option value="">â</option>' + opts.map(function(s){
     return '<option value="'+esc(s)+'"'+(s===c.source?" selected":"")+'>'+esc(s)+'</option>';
   }).join("");
 
@@ -1138,9 +1139,9 @@ function renderTaskDraft(){
     row.className = "task-item" + (t.done ? " done" : "");
     row.innerHTML =
       '<input type="checkbox"'+(t.done?" checked":"")+'>'+
-      '<input type="text" value="'+esc(t.text)+'" placeholder="What needs doing…">'+
+      '<input type="text" value="'+esc(t.text)+'" placeholder="What needs doingâ¦">'+
       '<input type="date" value="'+esc(t.due)+'">'+
-      '<button class="task-del" title="Remove">×</button>';
+      '<button class="task-del" title="Remove">Ã</button>';
     var cb = row.querySelector('input[type=checkbox]');
     var tx = row.querySelector('input[type=text]');
     var dt = row.querySelector('input[type=date]');
@@ -1167,10 +1168,10 @@ function renderLogDraft(){
     var row = document.createElement("div");
     row.className = "log-item";
     row.innerHTML =
-      '<span class="ld">'+esc(l.date||"—")+'</span>'+
+      '<span class="ld">'+esc(l.date||"â")+'</span>'+
       '<span class="lt">'+esc(l.type)+'</span>'+
       '<span class="ln">'+esc(l.note)+'</span>'+
-      '<button class="log-del" title="Remove">×</button>';
+      '<button class="log-del" title="Remove">Ã</button>';
     row.querySelector(".log-del").addEventListener("click", function(){
       state.logDraft = state.logDraft.filter(function(x){ return x.id !== l.id; });
       renderLogDraft();
@@ -1279,7 +1280,7 @@ function importJSON(file){
 /* ============================================================ theme / style */
 function applyTheme(){
   document.documentElement.setAttribute("data-theme", DB.settings.theme);
-  document.getElementById("themeBtn").textContent = DB.settings.theme==="dark" ? "☀ Light" : "🌙 Dark";
+  document.getElementById("themeBtn").textContent = DB.settings.theme==="dark" ? "â Light" : "ð Dark";
 }
 function toggleTheme(){
   DB.settings.theme = DB.settings.theme==="dark" ? "light" : "dark";
@@ -1403,11 +1404,11 @@ function wireEvents(){
   });
 
   document.getElementById("helpBtn").addEventListener("click", function(){
-    alert("Client Tracker & CRM — quick guide\n\n"+
+    alert("Client Tracker & CRM â quick guide\n\n"+
       "THREE VIEWS\n"+
-      "• Pipeline — drag a client between stages as the deal moves.\n"+
-      "• Clients — every client in one sortable table, most urgent first.\n"+
-      "• Dashboard — pipeline value, weighted forecast, follow-ups, tasks and win rate.\n\n"+
+      "â¢ Pipeline â drag a client between stages as the deal moves.\n"+
+      "â¢ Clients â every client in one sortable table, most urgent first.\n"+
+      "â¢ Dashboard â pipeline value, weighted forecast, follow-ups, tasks and win rate.\n\n"+
       "THE POINT OF THIS TOOL\n"+
       "Set a NEXT FOLLOW-UP date on a client. Anything overdue or due today appears in\n"+
       "'Follow up next' on the dashboard and at the top of the Clients table, so you always\n"+
@@ -1417,10 +1418,10 @@ function wireEvents(){
       "Contact details, stage, deal value, source, priority, tags, notes, a task list with due\n"+
       "dates, and a full contact log.\n\n"+
       "MAKE IT YOURS\n"+
-      "Style — 8 accent colours (or your own hex) across 3 board styles. Dark mode too.\n\n"+
+      "Style â 8 accent colours (or your own hex) across 3 board styles. Dark mode too.\n\n"+
       "YOUR DATA\n"+
       "Everything is saved in this browser on this device. Nothing is uploaded anywhere.\n"+
-      "Use Backup regularly — it is your file, keep a copy.");
+      "Use Backup regularly â it is your file, keep a copy.");
   });
 }
 
@@ -1449,5 +1450,6 @@ if(document.readyState === "loading"){
 
 })();
 </script>
+<div class="buildstamp noprint">Client Tracker &amp; CRM &middot; build 2026-09-18 &middot; LedgerLoopStudio</div>
 </body>
 </html>
